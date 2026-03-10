@@ -42,7 +42,7 @@ st.markdown("""
     .tool-header-text h1, .tool-header-text p { color: #ffffff !important; }
     .tool-header-text h1 { font-size: 24px; margin: 0; font-weight: 700; }
     .tool-header-text p  { margin: 4px 0 0; font-size: 14px; opacity: 0.80; }
-    .tool-header-logo img { max-height: 54px; width: auto; }
+    .tool-header-logo img { max-height: 95px; width: auto; }
 
     .kpi-card {
         background: #1a1f2e !important;
@@ -613,13 +613,6 @@ _logo_img = (
 )
 st.markdown(f"""
 <div class="tool-header">
-    <div class="tool-header-text">
-        <h1>⚡ EE-Ausbaubedarf – Klimaneutralitätspfad</h1>
-        <p>Berechnung benötigter EE-Kapazitäten &nbsp;·&nbsp;
-           Strom · Wärme · Verkehr &nbsp;·&nbsp;
-           {'Reduktion ' + str(red_pct) + ' % ggü. 2024' if red_pct else 'Referenzfall 2024 ohne Einsparung'}
-           &nbsp;·&nbsp; PV:Wind = {pv_cap_pct}:{100-pv_cap_pct} % (Kapazität)</p>
-    </div>
     {_logo_img}
 </div>
 """, unsafe_allow_html=True)
@@ -826,45 +819,6 @@ with tab1:
         )
         st.plotly_chart(fig_vm, use_container_width=True)
 
-    # ── Speicher-Sensitivität ─────────────────────────────────────────────────
-    st.markdown('<div class="section-h">Sensitivität: Restdefizit in Abhängigkeit vom Speicher</div>',
-                unsafe_allow_html=True)
-
-    sp_range = list(range(0, 20_001, 500))
-    defizite = []
-    _df_sens = s.get("df_ts_scaled")  # echte 15-min Profile für realistische Kurvenform
-    for sp in sp_range:
-        d, *_ = storage_simulation(s["pv_mwh"], s["wind_mwh"], s["demand"], sp,
-                                   df_ts_scaled=_df_sens, storage_mw=storage_mw)
-        defizite.append(d / 1000)
-
-    fig_sp = go.Figure()
-    fig_sp.add_trace(go.Scatter(
-        x=sp_range, y=defizite,
-        mode="lines", line=dict(color="#4da6e0", width=2.5),
-        fill="tozeroy", fillcolor="rgba(77,166,224,0.12)",
-        name="Residualdefizit [GWh/a]",
-    ))
-    fig_sp.add_vline(
-        x=storage_mwh, line_dash="dash", line_color="#f39c12",
-        annotation_text=f"Aktuell: {storage_mwh:,} MWh",
-        annotation_font_color="#f39c12",
-    )
-    if s["sp_99"]:
-        fig_sp.add_vline(
-            x=s["sp_99"], line_dash="dot", line_color="#2ecc71",
-            annotation_text=f"99 % Deckung: {s['sp_99']:,} MWh",
-            annotation_font_color="#2ecc71", annotation_position="top left",
-        )
-    fig_sp.update_layout(
-        height=280, margin=dict(l=0,r=0,t=10,b=0),
-        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
-        font=dict(color="#e8eaf0"),
-        xaxis=dict(title="Speicherkapazität [MWh]", gridcolor="#2a3a4a"),
-        yaxis=dict(title="Residualdefizit [GWh/a]", gridcolor="#2a3a4a"),
-        legend=dict(orientation="h", y=1.05, x=0),
-    )
-    st.plotly_chart(fig_sp, use_container_width=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TAB 2 – JAHRESVERLAUF & SPEICHER
