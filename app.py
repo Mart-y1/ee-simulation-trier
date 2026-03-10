@@ -37,10 +37,12 @@ st.markdown("""
     .tool-header {
         background: linear-gradient(135deg, #111111 0%, #2a2a2a 100%);
         padding: 22px 30px; border-radius: 12px; margin-bottom: 24px;
+        display: flex; align-items: center; justify-content: space-between;
     }
-    .tool-header h1, .tool-header p { color: #ffffff !important; }
-    .tool-header h1 { font-size: 24px; margin: 0; font-weight: 700; }
-    .tool-header p  { margin: 4px 0 0; font-size: 14px; opacity: 0.80; }
+    .tool-header-text h1, .tool-header-text p { color: #ffffff !important; }
+    .tool-header-text h1 { font-size: 24px; margin: 0; font-weight: 700; }
+    .tool-header-text p  { margin: 4px 0 0; font-size: 14px; opacity: 0.80; }
+    .tool-header-logo img { max-height: 54px; width: auto; }
 
     .kpi-card {
         background: #1a1f2e !important;
@@ -151,12 +153,13 @@ XLS_PATH = Path(__file__).parent / "data" / "EEnergie_Trier.xlsm"
 # ZEITREIHEN LADEN
 # ══════════════════════════════════════════════════════════════════════════════
 @st.cache_data(show_spinner="Lastprofil-Daten werden geladen…")
-def load_timeseries():
-    if not XLS_PATH.exists():
+def load_timeseries(xls_path_str: str):
+    xls_path = Path(xls_path_str)
+    if not xls_path.exists():
         return None
     try:
         import openpyxl
-        wb = openpyxl.load_workbook(str(XLS_PATH), read_only=True, keep_vba=False, data_only=True)
+        wb = openpyxl.load_workbook(str(xls_path), read_only=True, keep_vba=False, data_only=True)
         # Referenz-Installationsleistung aus Eingabe Matrix (C18=PV, E18=Wind)
         ws_em = wb["Eingabe Matrix"]
         ref_pv_mw   = float(ws_em["C18"].value or 2233.9)
@@ -187,7 +190,7 @@ def load_timeseries():
         return None
 
 
-df_ts = load_timeseries()
+df_ts = load_timeseries(str(XLS_PATH))
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SPEICHER-SIMULATION (aus Zeitreihe oder synthetisch)
@@ -599,13 +602,25 @@ s = compute(red, wp_ant, ch4_w_ant, p2l_w_ant,
 # HEADER
 # ══════════════════════════════════════════════════════════════════════════════
 red_pct = int(red * 100)
+_logo_b64 = ""
+_lp = Path(__file__).parent / "logo.png"
+if _lp.exists():
+    _logo_b64 = base64.b64encode(_lp.read_bytes()).decode()
+_logo_img = (
+    f'<div class="tool-header-logo">'
+    f'<img src="data:image/png;base64,{_logo_b64}" /></div>'
+    if _logo_b64 else ""
+)
 st.markdown(f"""
 <div class="tool-header">
-    <h1>⚡ EE-Ausbaubedarf Trier – Klimaneutralitätspfad</h1>
-    <p>Berechnung benötigter EE-Kapazitäten &nbsp;·&nbsp;
-       Strom · Wärme · Verkehr &nbsp;·&nbsp;
-       {'Reduktion ' + str(red_pct) + ' % ggü. 2024' if red_pct else 'Referenzfall 2024 ohne Einsparung'}
-       &nbsp;·&nbsp; PV:Wind = {pv_cap_pct}:{100-pv_cap_pct} % (Kapazität)</p>
+    <div class="tool-header-text">
+        <h1>⚡ EE-Ausbaubedarf – Klimaneutralitätspfad</h1>
+        <p>Berechnung benötigter EE-Kapazitäten &nbsp;·&nbsp;
+           Strom · Wärme · Verkehr &nbsp;·&nbsp;
+           {'Reduktion ' + str(red_pct) + ' % ggü. 2024' if red_pct else 'Referenzfall 2024 ohne Einsparung'}
+           &nbsp;·&nbsp; PV:Wind = {pv_cap_pct}:{100-pv_cap_pct} % (Kapazität)</p>
+    </div>
+    {_logo_img}
 </div>
 """, unsafe_allow_html=True)
 
