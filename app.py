@@ -463,8 +463,6 @@ def _logo_html():
     )
 
 with st.sidebar:
-    st.markdown(_logo_html(), unsafe_allow_html=True)
-
     st.markdown("### 🏙️ STADT")
     einwohner = st.number_input(
         "Einwohnerzahl", min_value=10_000, max_value=5_000_000,
@@ -613,6 +611,13 @@ _logo_img = (
 )
 st.markdown(f"""
 <div class="tool-header">
+    <div class="tool-header-text">
+        <h1>⚡ EE-Ausbaubedarf – Klimaneutralitätspfad</h1>
+        <p>Berechnung benötigter EE-Kapazitäten &nbsp;·&nbsp;
+           Strom · Wärme · Verkehr &nbsp;·&nbsp;
+           {'Reduktion ' + str(red_pct) + ' % ggü. 2024' if red_pct else 'Referenzfall 2024 ohne Einsparung'}
+           &nbsp;·&nbsp; PV:Wind = {pv_cap_pct}:{100-pv_cap_pct} % (Kapazität)</p>
+    </div>
     {_logo_img}
 </div>
 """, unsafe_allow_html=True)
