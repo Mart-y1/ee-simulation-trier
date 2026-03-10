@@ -16,7 +16,7 @@ import base64
 # PAGE CONFIG
 # ══════════════════════════════════════════════════════════════════════════════
 st.set_page_config(
-    page_title="EE-Ausbaubedarf Trier | Enerlyse",
+    page_title="EE-Ausbaubedarf Trier | Enerlyse SARL",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -455,7 +455,7 @@ def _logo_html():
     return (
         "<div style='text-align:center;padding:8px 0 4px'>"
         "<span style='font-size:26px'>⚡</span><br>"
-        "<span style='color:#4da6e0;font-weight:700;font-size:14px'>Enerlyse</span>"
+        "<span style='color:#4da6e0;font-weight:700;font-size:14px'>Enerlyse SARL</span>"
         "</div>"
     )
 
@@ -584,7 +584,7 @@ with st.sidebar:
     storage_mw_val = storage_mw  # 0 → max_pw=0 → kein Laden/Entladen
 
     st.markdown("---")
-    st.caption("Enerlyse GmbH · Trier 2024 → klimaneutral")
+    st.caption("Enerlyse SARL · Trier 2024 → klimaneutral")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
