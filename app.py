@@ -5,6 +5,7 @@ Basiert auf dem Excel-Modell „EEnergie Trier Neu"
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -29,10 +30,28 @@ st.markdown("""
 <style>
     .stApp { background-color: #0e1117 !important; color: #e8eaf0 !important; }
     #MainMenu { visibility: hidden; }
-    header[data-testid="stHeader"] { display: none; }
-    [data-testid="stToolbar"]      { display: none; }
     footer                         { display: none; }
     [data-testid="stDecoration"]   { display: none; }
+
+    /* Desktop: Header komplett verstecken */
+    @media (min-width: 769px) {
+        header[data-testid="stHeader"] { display: none; }
+        [data-testid="stToolbar"]      { display: none; }
+    }
+    /* Mobil: Header ausblenden (Button kommt via components.html) */
+    @media (max-width: 768px) {
+        header[data-testid="stHeader"] { display: none; }
+        [data-testid="stToolbar"] { display: none; }
+        .main .block-container { padding: 0.5rem 0.6rem 2rem !important; max-width: 100% !important; }
+        .tool-header { padding: 12px 14px !important; flex-direction: column; align-items: flex-start !important; }
+        .tool-header-text h1 { font-size: 15px !important; }
+        .tool-header-text p  { font-size: 12px !important; }
+        .tool-header-logo    { display: none; }
+        .kpi-value { font-size: 18px !important; }
+        .kpi-card  { padding: 8px 12px !important; min-height: 64px !important; }
+        .kpi-label { font-size: 11px !important; }
+        section[data-testid="stSidebar"] { width: 85vw !important; min-width: 260px !important; }
+    }
 
     .tool-header {
         background: linear-gradient(135deg, #111111 0%, #2a2a2a 100%);
@@ -587,6 +606,61 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Enerlyse SARL · Trier 2024 → klimaneutral")
 
+components.html("""
+<script>
+(function() {
+    var doc = window.parent.document;
+
+    // Desktop: Sidebar per injiziertem Style immer offen halten
+    if (!doc.getElementById('_sb_style')) {
+        var s = doc.createElement('style');
+        s.id = '_sb_style';
+        s.textContent =
+            '@media (min-width: 769px) {' +
+            '  section[data-testid="stSidebar"] { transform: none !important; min-width: 320px !important; }' +
+            '  [data-testid="stSidebarCollapseButton"] { display: none !important; }' +
+            '  [data-testid="stSidebarCollapsedControl"] { display: none !important; }' +
+            '  button[aria-label="Collapse sidebar"] { display: none !important; }' +
+            '  button[aria-label="collapse sidebar"] { display: none !important; }' +
+            '}';
+        doc.head.appendChild(s);
+    }
+
+    // Mobil: Floating-Button direkt in parent body injizieren
+    function injectMobileBtn() {
+        if (doc.getElementById('_sb_btn')) return;
+        var btn = doc.createElement('button');
+        btn.id = '_sb_btn';
+        btn.textContent = '☰ Eingaben';
+        btn.style.cssText =
+            'position:fixed;top:0;left:0;right:0;z-index:99999;' +
+            'background:#4da6e0;color:#fff;border:none;' +
+            'padding:14px 20px;font-size:16px;font-weight:700;' +
+            'width:100%;text-align:left;cursor:pointer;' +
+            'box-shadow:0 2px 8px rgba(0,0,0,0.4);';
+        btn.onclick = function() {
+            var sb = doc.querySelector('section[data-testid="stSidebar"]');
+            if (!sb) return;
+            var open = sb.style.transform === 'none' || sb.style.transform === '';
+            if (open) {
+                sb.style.transform = 'translateX(-110%)';
+                btn.textContent = '☰ Eingaben';
+            } else {
+                sb.style.transform = 'none';
+                btn.textContent = '✕ Schließen';
+            }
+        };
+        doc.body.appendChild(btn);
+        var main = doc.querySelector('.main');
+        if (main) main.style.paddingTop = '52px';
+    }
+
+    if (window.innerWidth <= 768) {
+        setTimeout(injectMobileBtn, 400);
+    }
+})();
+</script>
+""", height=0)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BERECHNUNG
@@ -693,7 +767,7 @@ with tab1:
     )
 
     # ── Strombedarf-Anstieg ───────────────────────────────────────────────────
-    strom_heute   = STROM_BASIS                   # nur Direktstrom heute [MWh]
+    strom_heute   = STROM_BASIS * pop_factor       # nur Direktstrom heute [MWh], skaliert auf Einwohnerzahl
     strom_zukunft = s["demand_mit_backup"]        # gesamter EE-Bedarf Zukunft [MWh]
     strom_delta   = strom_zukunft - strom_heute
     strom_pct     = strom_delta / strom_heute * 100
