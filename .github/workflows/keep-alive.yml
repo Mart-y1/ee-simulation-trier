@@ -1,7 +1,7 @@
- name: Keep Alive
-  on:
+name: Keep Alive
+  "on":
     schedule:
-      - cron: '0 */6 * * *'  # alle 6 Stunden
+      - cron: '0 */6 * * *'
 
   jobs:
     keep-alive:
