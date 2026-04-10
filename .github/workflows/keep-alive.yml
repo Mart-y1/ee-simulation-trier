@@ -1,9 +1,9 @@
- name: Keep Alive
-  "on":
+name: Keep Alive
+"on":
     schedule:
       - cron: '0 */6 * * *'
 
-  jobs:
+jobs:
     keep-alive:
       runs-on: ubuntu-latest
       steps:
