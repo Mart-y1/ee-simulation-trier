@@ -1,0 +1,19 @@
+ name: Keep Alive
+  on:
+    schedule:
+      - cron: '0 */6 * * *'  # alle 6 Stunden
+
+  jobs:
+    keep-alive:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Commit timestamp
+          run: |
+            git config user.email "action@github.com"
+            git config user.name "GitHub Action"
+            echo "$(date -u)" > keep_alive.txt
+            git add keep_alive.txt
+            git commit -m "chore: keep alive $(date -u +%Y-%m-%d)"
+            git push
