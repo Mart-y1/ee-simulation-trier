@@ -941,7 +941,7 @@ with tab2:
         margin=dict(l=0,r=0,t=10,b=0),
         plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
         font=dict(color="#e8eaf0"),
-        legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="left", x=0, font_size=11),
+        legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="left", x=0, font=dict(size=11, color="#e8eaf0")),
         yaxis=dict(title="GWh / Monat", gridcolor="#2a3a4a"),
         xaxis=dict(gridcolor="#2a3a4a"),
     )
@@ -1006,7 +1006,7 @@ with tab2:
                 height=340, margin=dict(l=0,r=0,t=10,b=0),
                 plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
                 font=dict(color="#e8eaf0"),
-                legend=dict(orientation="h", y=1.05, x=0),
+                legend=dict(orientation="h", y=1.05, x=0, font=dict(color="#e8eaf0")),
                 yaxis=dict(title="Leistung [MW]", gridcolor="#2a3a4a"),
                 xaxis=dict(gridcolor="#2a3a4a"),
             )
@@ -1199,7 +1199,7 @@ with tab4:
             margin=dict(l=0,r=0,t=10,b=40),
             plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
             font=dict(color="#e8eaf0"),
-            legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="left", x=0),
+            legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="left", x=0, font=dict(color="#e8eaf0")),
             yaxis=dict(title="t CO₂/a", gridcolor="#2a3a4a"),
         )
         st.plotly_chart(fig_co2, use_container_width=True)
