@@ -1042,8 +1042,10 @@ with tab2:
         height=380, margin=dict(l=0,r=0,t=30,b=0),
         plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
         font=dict(color="#e8eaf0"),
-        legend=dict(orientation="h", y=1.05, x=0),
+        legend=dict(orientation="h", y=1.05, x=0, font=dict(color="#e8eaf0")),
     )
+    for ann in fig_soc.layout.annotations:
+        ann.font.color = "#e8eaf0"
     fig_soc.update_yaxes(gridcolor="#2a3a4a")
     fig_soc.update_xaxes(gridcolor="#2a3a4a")
     st.plotly_chart(fig_soc, use_container_width=True)
